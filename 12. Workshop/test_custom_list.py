@@ -212,6 +212,92 @@ class TestCustomList(TestCase):
         self.assertEqual([10, 5], result)
         self.assertNotEqual(id(result), id(self.custom_list._CustomIntList__values))
 
+    def test_size_returns_elements_count(self):
+        self.assertEqual([], self.custom_list._CustomIntList__values)
+        count = self.custom_list.size()
+        self.assertEqual(0, count)
+
+        self.custom_list.append(10)
+        self.custom_list.append(5)
+        self.assertEqual([10, 5], self.custom_list._CustomIntList__values)
+        count = self.custom_list.size()
+        self.assertEqual(2, count)
+
+    def test_add_first_no_elements_appends(self):
+        self.assertEqual([], self.custom_list._CustomIntList__values)
+        self.custom_list.add_first(5)
+        self.assertEqual([5], self.custom_list._CustomIntList__values)
+
+    def test_add_first_adds_element_infront(self):
+        self.custom_list.append(10)
+        self.custom_list.append(5)
+        self.assertEqual([10, 5], self.custom_list._CustomIntList__values)
+        self.custom_list.add_first(-3)
+        self.assertEqual([-3, 10, 5], self.custom_list._CustomIntList__values)
+
+    def test_add_first_non_integer_raises(self):
+        with self.assertRaises(ValueError) as ex:
+            self.custom_list.add_first("5")
+        self.assertEqual("Only ints are accepted", str(ex.exception))
+
+    def test_dictionize_odd_count(self):
+        self.custom_list.append(10)
+        self.custom_list.append(5)
+        self.custom_list.append(15)
+
+        result = self.custom_list.dictionize()
+        expected_result = {10: 5, 15: " "}
+        self.assertEqual(result, expected_result)
+
+    def test_dictionize_even_count(self):
+        self.custom_list.append(10)
+        self.custom_list.append(5)
+
+        result = self.custom_list.dictionize()
+        expected_result = {10: 5}
+        self.assertEqual(result, expected_result)
+
+    def test_move_moves_n_values_at_the_end(self):
+        self.custom_list.append(5)
+        self.custom_list.append(10)
+        self.custom_list.append(15)
+        self.custom_list.append(20)
+        self.assertEqual([5, 10, 15, 20], self.custom_list._CustomIntList__values)
+
+        result = self.custom_list.move(2)
+        self.assertEqual([15, 20, 5, 10], self.custom_list._CustomIntList__values)
+        self.assertEqual([15, 20, 5, 10], result)
+
+    def test_sum(self):
+        self.custom_list.append(5)
+        self.custom_list.append(10)
+        self.custom_list.append(15)
+        self.custom_list.append(20)
+        self.assertEqual([5, 10, 15, 20], self.custom_list._CustomIntList__values)
+
+        result = self.custom_list.sum()
+        self.assertEqual(50, result)
+
+    def test_overbound(self):
+        self.custom_list.append(5)
+        self.custom_list.append(20)
+        self.custom_list.append(10)
+        self.custom_list.append(15)
+        self.assertEqual([5, 20, 10, 15], self.custom_list._CustomIntList__values)
+
+        res = self.custom_list.overbound()
+        self.assertEqual(20, res)
+
+    def test_underbound(self):
+        self.custom_list.append(20)
+        self.custom_list.append(5)
+        self.custom_list.append(10)
+        self.custom_list.append(15)
+        self.assertEqual([20, 5, 10, 15], self.custom_list._CustomIntList__values)
+
+        res = self.custom_list.underbound()
+        self.assertEqual(5, res)
+
 
 if __name__ == '__main__':
     main()
