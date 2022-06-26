@@ -5,6 +5,10 @@ class NoElementsInListError(Exception):
     pass
 
 
+class NoSuchValueError(Exception):
+    pass
+
+
 CUSTOM_INDEX_ERROR_MESSAGE = 'Invalid index'
 CUSTOM_DATA_INDEX_ERROR_MESSAGE = 'Index is not a valid integer. Please pass an integer number'
 
@@ -56,6 +60,21 @@ class CustomList:
 
     def clear(self):
         self.__values.clear()
+
+    def index_left(self, value):
+        try:
+            return self.__values.index(value)
+        except ValueError:
+            raise NoSuchValueError("No such value in the list")
+
+    def index_right(self, value):
+        for index in range(len(self.__values) - 1, -1, -1):
+            if self.__values[index] == value:
+                return index
+        raise NoSuchValueError("No such value in the list")
+
+    def count(self, val):
+        return self.__values.count(val)
 
 
 from unittest import main, TestCase
@@ -185,6 +204,53 @@ class TestCustomList(TestCase):
 
         self.custom_list.clear()
         self.assertEqual([], self.custom_list._CustomList__values)
+
+    def test_index_left_returns_left_most_index_of_the_element(self):
+        self.custom_list.append(5)
+        self.custom_list.append(15)
+        self.custom_list.append(5)
+
+        index = self.custom_list.index_left(5)
+        self.assertEqual(0, index)
+
+    def test_index_right_returns_left_most_index_of_the_element(self):
+        self.custom_list.append(5)
+        self.custom_list.append(15)
+        self.custom_list.append(5)
+
+        index = self.custom_list.index_right(5)
+        self.assertEqual(2, index)
+
+    def test_index_left_invalid_value_raises(self):
+        self.assertEqual([], self.custom_list._CustomList__values)
+        with self.assertRaises(NoSuchValueError) as ex:
+            self.custom_list.index_left(5)
+        self.assertEqual("No such value in the list", str(ex.exception))
+
+    def test_index_right_invalid_value_raises(self):
+        self.assertEqual([], self.custom_list._CustomList__values)
+        with self.assertRaises(NoSuchValueError) as ex:
+            self.custom_list.index_right(5)
+        self.assertEqual("No such value in the list", str(ex.exception))
+
+    def test_count_no_such_value(self):
+        self.custom_list.append(10)
+        self.assertEqual([10], self.custom_list._CustomList__values)
+
+        count = self.custom_list.count(5)
+        self.assertEqual(0, count)
+
+    def test_count(self):
+        self.custom_list.append(10)
+        self.custom_list.append(5)
+        self.custom_list.append(10)
+        self.assertEqual([10, 5, 10], self.custom_list._CustomList__values)
+
+        count = self.custom_list.count(10)
+        self.assertEqual(2, count)
+
+        count = self.custom_list.count(5)
+        self.assertEqual(1, count)
 
 
 if __name__ == '__main__':
