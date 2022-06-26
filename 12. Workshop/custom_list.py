@@ -77,3 +77,45 @@ class CustomIntList:
 
     def copy(self):
         return deepcopy(self.__values)
+
+    def size(self):
+        return len(self.__values)
+
+    def add_first(self, val):
+        if not isinstance(val, int):
+            raise ValueError("Only ints are accepted")
+        self.__values.insert(0, val)
+
+    def dictionize(self):
+        result = {}
+
+        for index in range(0, len(self.__values), 2):
+            key = self.__values[index]
+            try:
+                value = self.__values[index+1]
+            except IndexError:
+                value = " "
+
+            result[key] = value
+        return result
+
+    def move(self, n):
+        self.__values = self.__values[2:] + self.__values[:n]
+        return self.__values
+
+    def sum(self):
+        # res = 0
+        # for el in self.__values:
+        #     if isinstance(el, int) or isinstance(el, float)
+        #         res += el
+        #     else:
+        #         res += len(el)
+        # return res
+
+        return sum(self.__values)
+
+    def overbound(self):
+        return max(self.__values)
+
+    def underbound(self):
+        return min(self.__values)
